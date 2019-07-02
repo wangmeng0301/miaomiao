@@ -1,5 +1,5 @@
 <template>
-    <div class="movie_body">
+    <div class="movie_body" ref="movie_body">
         <ul>
             <!-- <li>
                 <div class="pic_show"><img src="/images/movie_1.jpg"></div>
@@ -14,7 +14,7 @@
                 </div>
             </li> -->
              <li v-for="item in movieList" :key="item.id">
-                <div class="pic_show">
+                <div class="pic_show" @tap="handleToDetail">
                     <img :src="item.img | setWH('128.180')">
                 </div>
                 <div class="info_list">
@@ -32,11 +32,15 @@
 </template>
 
 <script>
+
+import BScroll from "better-scroll";
+
 export default {
     name:"nowplaying",
     data(){
         return {
-            movieList : []
+            movieList : [],
+            pullDownMsg: unll,
         }
     },
     mounted(){
@@ -44,15 +48,35 @@ export default {
             var msg = res.data.msg;
             if(msg === "ok"){
                 this.movieList = res.data.data.movieList;
-            }
+                this.$nextTick(()=>{
+                    var scroll = new BScroll(this.$refs.movie_body,{
+                        tap:true,
+                        probeType:1
+                    });
+
+                    scroll.on("scroll",()=>{
+                        console.log("scroll")
+                    });
+
+                    scroll.on("touchEnd",()=>{
+                        console.log("touchend");
+                    });
+
+                });
+            };
         })
     },
+    methods:{
+        handleToDetail(){
+            console.log("handleToDetail")
+        }
+    }
     
 }
 </script>
 
 <style scoped>
-#content .movie_body{ flex:1; overflow:auto;}
+.movie_body{ flex:1; overflow:auto;height:520px}
 .movie_body ul{ margin:0 12px; overflow: hidden;}
 .movie_body ul li{ margin-top:12px; display: flex; align-items:center; border-bottom: 1px #e6e6e6 solid; padding-bottom: 10px;}
 .movie_body .pic_show{ width:64px; height: 90px;}
